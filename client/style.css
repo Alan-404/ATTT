@@ -284,6 +284,7 @@ html {
     margin-bottom: 12px;
     font-size: 1.5rem;
     margin-right: 16px;
+    position: relative;
 }
 
 .chat-conversation .image-user-1,
@@ -416,6 +417,25 @@ html {
 .modal-footer .btn-invite {
     color: #fff;
     background: #4eac6d;
+}
+
+.list-conversation {
+    position: relative;
+    margin-top: 8px;
+}
+
+.name-user-2 {
+    position: absolute;
+    top: -16px;
+    left: 25px;
+    font-size: 1.2rem;
+}
+
+.name-user-1 {
+    position: absolute;
+    top: -16px;
+    right: 25px;
+    font-size: 1.2rem;
 }
 
 @keyframes modalFadeIn {

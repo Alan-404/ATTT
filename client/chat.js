@@ -16,7 +16,7 @@ $(function() {
     const modal = document.querySelector('#modal');
     const modalClose = document.querySelector('.modal-close');
 
-    
+
     addContact.onclick = () => {
         modal.classList.add("active");
     };
@@ -53,7 +53,7 @@ $(function() {
 
     socket.on('send_key', (data) => {
         key = 1;
-        console.log("Key received from another client: "+data)
+        console.log("Key received from another client: " + data)
         for (let i = 0; i < secretKey; i++) {
             key *= data;
             key %= publicKey.p;
@@ -65,7 +65,11 @@ $(function() {
     //Emit message
     chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
+
         let text = message.val();
+        if (text === '') {
+            return;
+        }
         console.log(text)
         let encryptedText = CryptoJS.AES.encrypt(text, key.toString()).toString();
         console.log(encryptedText);
@@ -75,23 +79,38 @@ $(function() {
 
     //Listen on new_message
     socket.on("new_message", (data) => {
+        console.log(data.username);
         if (data.message !== '' && data.username !== userContact.innerText) {
             let decryptedText = CryptoJS.AES.decrypt(data.message, key.toString()).toString(CryptoJS.enc.Utf8);
             var chatItem = document.createElement('li');
             chatItem.classList.add('user-2');
+            var divConversation = document.createElement('div');
+            divConversation.classList.add('list-conversation');
             var divChat = document.createElement('div');
             divChat.classList.add('text-user-2');
             divChat.innerText = decryptedText;
-            chatItem.appendChild(divChat);
+            var divName = document.createElement('div');
+            divName.classList.add('name-user-2');
+            divName.innerText = data.username;
+            divConversation.appendChild(divName);
+            divConversation.appendChild(divChat);
+            chatItem.appendChild(divConversation);
             chatBox.appendChild(chatItem);
         } else if (data.message !== '' && data.username === userContact.innerText) {
             let decryptedText = CryptoJS.AES.decrypt(data.message, key.toString()).toString(CryptoJS.enc.Utf8);
             var chatItem = document.createElement('li');
             chatItem.classList.add('user-1');
+            var divConversation = document.createElement('div');
+            divConversation.classList.add('list-conversation');
+            var divName = document.createElement('div');
+            divName.classList.add('name-user-1');
+            divName.innerText = data.username;
             var divChat = document.createElement('div');
             divChat.classList.add('text-user-1');
             divChat.innerText = decryptedText;
-            chatItem.appendChild(divChat);
+            divConversation.appendChild(divName);
+            divConversation.appendChild(divChat);
+            chatItem.appendChild(divConversation);
             chatBox.appendChild(chatItem);
         }
     });
