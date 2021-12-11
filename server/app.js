@@ -1,15 +1,7 @@
 const express = require('express');
 const app = express();
 
-
-app.use(express.static('public'));
-
-app.get('/', (req, res) => {
-    res.render('index')
-});
-
 server = app.listen(5000, () => console.log('http://localhost:5000'));
-
 
 const io = require("socket.io")(server);
 
@@ -53,9 +45,8 @@ async function shareKeys() {
             if (client !== middle) {
                 await compute(middle, middleMess)
                     .then((data) => {
-                        console.log("In then: " + middleMess)
                         middleMess = data;
-                        console.log("In then data: " + data)
+                        console.log("In data: " + data)
                     });
             }
         }

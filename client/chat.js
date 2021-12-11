@@ -5,7 +5,6 @@ $(function() {
     //buttons and inputs
     let message = $("#message");
     let username = $("#username");
-    let send_message = $("#send_message");
     let send_username = $("#send_username");
     let chatroom = $("#chatroom");
     let feedback = $("#feedback");
@@ -16,6 +15,8 @@ $(function() {
     const addContact = document.querySelector('.add-contact');
     const modal = document.querySelector('#modal');
     const modalClose = document.querySelector('.modal-close');
+
+    
     addContact.onclick = () => {
         modal.classList.add("active");
     };
@@ -29,7 +30,7 @@ $(function() {
     };
 
     let secretKey = Math.floor(Math.random() * (1000 - 1)) + 1;
-    let sharedSecret = 0;
+    let key = 0;
 
 
     socket.on('get_public_key', (data) => {
@@ -51,14 +52,14 @@ $(function() {
     });
 
     socket.on('send_key', (data) => {
-        sharedSecret = 1;
+        key = 1;
         console.log("Key received from another client: "+data)
         for (let i = 0; i < secretKey; i++) {
-            sharedSecret *= data;
-            sharedSecret %= publicKey.p;
+            key *= data;
+            key %= publicKey.p;
         }
 
-        console.log(`shared secret: ${sharedSecret}`);
+        console.log(`Key to encode anh decode: ${key}`);
     });
 
     //Emit message
@@ -66,7 +67,7 @@ $(function() {
         e.preventDefault();
         let text = message.val();
         console.log(text)
-        let encryptedText = CryptoJS.AES.encrypt(text, sharedSecret.toString()).toString();
+        let encryptedText = CryptoJS.AES.encrypt(text, key.toString()).toString();
         console.log(encryptedText);
         message.val('');
         socket.emit('new_message', { message: encryptedText });
@@ -75,7 +76,7 @@ $(function() {
     //Listen on new_message
     socket.on("new_message", (data) => {
         if (data.message !== '' && data.username !== userContact.innerText) {
-            let decryptedText = CryptoJS.AES.decrypt(data.message, sharedSecret.toString()).toString(CryptoJS.enc.Utf8);
+            let decryptedText = CryptoJS.AES.decrypt(data.message, key.toString()).toString(CryptoJS.enc.Utf8);
             var chatItem = document.createElement('li');
             chatItem.classList.add('user-2');
             var divChat = document.createElement('div');
@@ -84,7 +85,7 @@ $(function() {
             chatItem.appendChild(divChat);
             chatBox.appendChild(chatItem);
         } else if (data.message !== '' && data.username === userContact.innerText) {
-            let decryptedText = CryptoJS.AES.decrypt(data.message, sharedSecret.toString()).toString(CryptoJS.enc.Utf8);
+            let decryptedText = CryptoJS.AES.decrypt(data.message, key.toString()).toString(CryptoJS.enc.Utf8);
             var chatItem = document.createElement('li');
             chatItem.classList.add('user-1');
             var divChat = document.createElement('div');
