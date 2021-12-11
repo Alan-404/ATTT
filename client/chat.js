@@ -67,9 +67,6 @@ $(function() {
         e.preventDefault();
 
         let text = message.val();
-        if (text === '') {
-            return;
-        }
         console.log(text)
         let encryptedText = CryptoJS.AES.encrypt(text, key.toString()).toString();
         console.log(encryptedText);
@@ -79,7 +76,6 @@ $(function() {
 
     //Listen on new_message
     socket.on("new_message", (data) => {
-        console.log(data.username);
         if (data.message !== '' && data.username !== userContact.innerText) {
             let decryptedText = CryptoJS.AES.decrypt(data.message, key.toString()).toString(CryptoJS.enc.Utf8);
             var chatItem = document.createElement('li');
